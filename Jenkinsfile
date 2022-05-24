@@ -17,7 +17,7 @@ pipeline {
     }
     stage('Quality Check :: Sonarqube & JaCoCo') {
       steps {
-        sh "mvn sonar:sonar -Dsonar.host.url=https://localhost:9000 -Dsonar.login="
+        sh "mvn sonar:sonar -Dsonar.host.url=https://localhost:9000 -Dsonar.login=e3df00d9279eb0d36033362fdc43b4476ec9b292"
       }
     }
     stage('Insatll App') {
