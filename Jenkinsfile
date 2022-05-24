@@ -17,7 +17,7 @@ pipeline {
     }
     stage('Quality Check :: Sonarqube & JaCoCo') {
       steps {
-        sh "mvn sonar:sonar"
+        sh "mvn sonar:sonar -Dsonar.host.url=https://172.29.7.2:9000 -Dsonar.login=admin -Dsonar.password=sonar"
       }
     }
     stage('Insatll App') {
