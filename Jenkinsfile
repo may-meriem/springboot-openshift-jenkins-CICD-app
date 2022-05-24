@@ -28,15 +28,19 @@ pipeline {
     stage('Create Image Builder') {
       when {
         expression {
-          openshift.withCluster() {
-            return !openshift.selector("bc", "springbootapp").exists();
+          openshift.withCluster('okd_cluster', 'okd_cred') {
+            openshift.withProject('cicd-demo'){
+              return !openshift.selector("bc", "springbootapp").exists();
+            }
           }
         }
       }
       steps {
         script {
-          openshift.withCluster() {
-            openshift.newBuild("--name=springbootapp","--image-stream=openjdk18-openshift:1.1", "--binary")
+          openshift.withCluster('okd_cluster', 'okd_cred') {
+            openshift.withProject('cicd-demo'){
+              openshift.newBuild("--name=springbootapp","--image-stream=openjdk18-openshift:1.1", "--binary")
+            }
           }
         }
       }
@@ -44,33 +48,41 @@ pipeline {
     stage('Build Image') {
       steps {
         script {
-          openshift.withCluster() {
-            openshift.selector("bc", "springbootapp").startBuild("--from-file=target/spring-example-0.0.1-SNAPSHOT.jar", "--wait")
-          }
+          openshift.withCluster('okd_cluster', 'okd_cred') {
+            openshift.withProject('cicd-demo'){
+              openshift.selector("bc", "springbootapp").startBuild("--from-file=target/spring-example-0.0.1-SNAPSHOT.jar", "--wait")
+            }
+          } 
         }
       }
     }
     stage('Promote to UAT') {
       steps {
         script {
-          openshift.withCluster() {
-            openshift.tag("springbootapp:latest", "springbootapp:uat")
-          }
+          openshift.withCluster('okd_cluster', 'okd_cred') {
+            openshift.withProject('cicd-demo'){
+              openshift.tag("springbootapp:latest", "springbootapp:uat")
+            }
+          }  
         }
       }
     }
     stage('Create UAT') {
       when {
         expression {
-          openshift.withCluster() {
-            return !openshift.selector('dc', 'springbootapp-uat').exists()
+          openshift.withCluster('okd_cluster', 'okd_cred') {
+            openshift.withProject('cicd-demo'){
+              return !openshift.selector('dc', 'springbootapp-uat').exists()
+            }
           }
         }
       }
       steps {
         script {
-          openshift.withCluster() {
-            openshift.newApp("springbootapp:latest", "--name=springbootapp-uat").narrow('svc').expose()
+          openshift.withCluster('okd_cluster', 'okd_cred') {
+            openshift.withProject('cicd-demo'){
+              openshift.newApp("springbootapp:latest", "--name=springbootapp-uat").narrow('svc').expose()
+            }
           }
         }
       }
@@ -78,8 +90,10 @@ pipeline {
     stage('Promote PROD') {
       steps {
         script {
-          openshift.withCluster() {
-            openshift.tag("springbootapp:uat", "springbootapp:prod")
+          openshift.withCluster('okd_cluster', 'okd_cred') {
+            openshift.withProject('cicd-demo'){
+              openshift.tag("springbootapp:uat", "springbootapp:prod")
+            }
           }
         }
       }
@@ -87,17 +101,20 @@ pipeline {
     stage('Create PROD') {
       when {
         expression {
-          openshift.withCluster() {
-            return !openshift.selector('dc', 'springbootapp-prod').exists()
-          }
+          openshift.withCluster('okd_cluster', 'okd_cred') {
+            openshift.withProject('cicd-demo'){
+              return !openshift.selector('dc', 'springbootapp-prod').exists()
+            }
+          }  
         }
       }
       steps {
         script {
-          openshift.withCluster() {
-            openshift.newApp("springbootapp:prod", "--name=springbootapp-prod").narrow('svc').expose()
+          openshift.withCluster('okd_cluster', 'okd_cred') {
+            openshift.withProject('cicd-demo'){
+              openshift.newApp("springbootapp:prod", "--name=springbootapp-prod").narrow('svc').expose()
+            }
           }
-        }
       }
     }
   }
