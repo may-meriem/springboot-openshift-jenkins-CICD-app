@@ -28,7 +28,7 @@ pipeline {
     stage('Create Image Builder') {
       when {
         expression {
-          openshift.withCluster() {
+          openshift.withCluster('okd_cluster' , 'okd_cred') {
             openshift.withProject(){
               return !openshift.selector("bc", "springbootapp").exists();
             }
@@ -37,7 +37,7 @@ pipeline {
       }
       steps {
         script {
-          openshift.withCluster() {
+          openshift.withCluster('okd_cluster' , 'okd_cred') {
             openshift.withProject('cicd-demo'){
               openshift.newBuild("--name=springbootapp","--image-stream=openjdk18-openshift:1.1", "--binary")
             }
@@ -48,7 +48,7 @@ pipeline {
     stage('Build Image') {
       steps {
         script {
-          openshift.withCluster() {
+          openshift.withCluster('okd_cluster' , 'okd_cred') {
             openshift.withProject(){
               openshift.selector("bc", "springbootapp").startBuild("--from-file=target/spring-example-0.0.1-SNAPSHOT.jar", "--wait")
             }
@@ -59,7 +59,7 @@ pipeline {
     stage('Promote to UAT') {
       steps {
         script {
-          openshift.withCluster() {
+          openshift.withCluster('okd_cluster' , 'okd_cred') {
             openshift.withProject(){
               openshift.tag("springbootapp:latest", "springbootapp:uat")
             }
@@ -70,7 +70,7 @@ pipeline {
     stage('Create UAT') {
       when {
         expression {
-          openshift.withCluster() {
+          openshift.withCluster('okd_cluster' , 'okd_cred') {
             openshift.withProject('cicd-demo'){
               return !openshift.selector('dc', 'springbootapp-uat').exists()
             }
@@ -79,7 +79,7 @@ pipeline {
       }
       steps {
         script {
-          openshift.withCluster() {
+          openshift.withCluster('okd_cluster' , 'okd_cred') {
             openshift.withProject('cicd-demo'){
               openshift.newApp("springbootapp:latest", "--name=springbootapp-uat").narrow('svc').expose()
             }
@@ -90,7 +90,7 @@ pipeline {
     stage('Promote PROD') {
       steps {
         script {
-          openshift.withCluster() {
+          openshift.withCluster('okd_cluster' , 'okd_cred') {
             openshift.withProject('cicd-demo'){
               openshift.tag("springbootapp:uat", "springbootapp:prod")
             }
@@ -101,7 +101,7 @@ pipeline {
     stage('Create PROD') {
       when {
         expression {
-          openshift.withCluster() {
+          openshift.withCluster('okd_cluster' , 'okd_cred') {
             openshift.withProject('cicd-demo'){
               return !openshift.selector('dc', 'springbootapp-prod').exists()
             }
@@ -110,7 +110,7 @@ pipeline {
       }
       steps {
         script {
-          openshift.withCluster() {
+          openshift.withCluster('okd_cluster' , 'okd_cred') {
             openshift.withProject('cicd-demo'){
               openshift.newApp("springbootapp:prod", "--name=springbootapp-prod").narrow('svc').expose()
             }
