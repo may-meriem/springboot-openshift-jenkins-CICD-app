@@ -29,7 +29,7 @@ pipeline {
    stage('Create Image Builder') {
       steps {
         sshagent (credentials: ['deploy-dev']) {
-         sh 'ssh -o StrictHostKeyChecking=no -l root 172.29.7.11 uname -a'
+         sh 'ssh -o StrictHostKeyChecking=no root@172.29.7.11 '
         }
       }
     }
