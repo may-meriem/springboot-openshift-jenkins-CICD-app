@@ -26,7 +26,7 @@ pipeline {
       }
     }
     
-      stage('Create Image Builder') 
+    stage('Create Image Builder'){
         
         steps {
            sshagent(['k8s-jenkins']){
