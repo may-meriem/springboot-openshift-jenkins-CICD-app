@@ -25,7 +25,7 @@ pipeline {
         sh "mvn install"
       }
     }
-    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-cred')]){ 
+    
       stage('Create Image Builder') {
     
         when {
@@ -37,17 +37,19 @@ pipeline {
             }
           }
         }
+        
         steps {
-           script {
-            openshift.withCluster('okd_cluster' , 'okd_cred') {
-              openshift.withProject('cicd-demo'){
-                openshift.newBuild("--name=springbootapp","--image-stream=openjdk18-openshift:1.1", "--binary")
+           sshagent(['k8s-jenkins']){
+            script {
+              openshift.withCluster('okd_cluster' , 'okd_cred') {
+                openshift.withProject('cicd-demo'){
+                  openshift.newBuild("--name=springbootapp","--image-stream=openjdk18-openshift:1.1", "--binary")
                 }
-            }
-            
+              }
+            } 
            }  
         }
       }    
-    }
+    
   } 
 }
