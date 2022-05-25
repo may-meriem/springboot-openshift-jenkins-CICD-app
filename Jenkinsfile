@@ -36,10 +36,12 @@ pipeline {
         }
       }
       steps {
-        script {
-          openshift.withCluster('okd_cluster' , 'okd_cred') {
-            openshift.withProject('cicd-demo'){
-              openshift.newBuild("--name=springbootapp","--image-stream=openjdk18-openshift:1.1", "--binary")
+        sshagent(['ssh-cred']){
+          script {
+            openshift.withCluster('okd_cluster' , 'okd_cred') {
+              openshift.withProject('cicd-demo'){
+                openshift.newBuild("--name=springbootapp","--image-stream=openjdk18-openshift:1.1", "--binary")
+              }
             }
           }
         }
