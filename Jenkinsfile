@@ -31,8 +31,9 @@ pipeline {
         steps {
            sshagent(['ssh-cred']){
             sh 'ssh -o StrictHostKeyChecking=no -l root 172.29.7.11 uname -a' 
-        }  
-        
+          }  
+          
+        }
     }   
     
   } 
