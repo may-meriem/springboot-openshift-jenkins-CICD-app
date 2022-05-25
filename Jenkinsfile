@@ -25,16 +25,17 @@ pipeline {
         sh "mvn install"
       }
     }
-    stage('Create Image Builder') {
-      withCredentials([sshUserPrivateKey(credentialsId: 'ssh-cred')]){ 
+    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-cred')]){ 
+      stage('Create Image Builder') {
+    
         when {
-         expression {
-          openshift.withCluster('okd_cluster' , 'okd_cred') {
-            openshift.withProject('cicd-demo'){
-              return !openshift.selector("bc", "springbootapp").exists();
+          expression {
+            openshift.withCluster('okd_cluster' , 'okd_cred') {
+              openshift.withProject('cicd-demo'){
+                return !openshift.selector("bc", "springbootapp").exists();
+              }
             }
           }
-         }
         }
         steps {
            script {
