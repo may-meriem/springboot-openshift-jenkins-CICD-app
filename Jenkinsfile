@@ -31,9 +31,10 @@ pipeline {
         steps {
            sshagent(['k8s-jenkins']){
             script {
+              sh'''ssh root@172.29.7.11
               openshift.withCluster('okd_cluster' , 'okd_cred') {
                 openshift.withProject('cicd-demo'){
-                  openshift.newBuild("--name=springbootapp","--image-stream=openjdk18-openshift:1.1", "--binary")
+                  openshift.newBuild("--name=springbootapp","--image-stream=openjdk18-openshift:1.1", "--binary")'''
                 }
               }
             } 
