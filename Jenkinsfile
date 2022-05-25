@@ -29,7 +29,7 @@ pipeline {
     stage('Create Image Builder'){
         
         steps {
-           sshagent(['k8s-jenkins']){
+           sshagent(['ssh-cred']){
             script {
               sh 'ssh root@172.29.7.11 oc project'
             }
