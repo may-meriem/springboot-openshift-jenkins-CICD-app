@@ -29,7 +29,7 @@ pipeline {
       when {
         expression {
           openshift.withCluster('okd_cluster' , 'okd_cred') {
-            openshift.withProject(){
+            openshift.withProject('cicd-demo'){
               return !openshift.selector("bc", "springbootapp").exists();
             }
           }
@@ -47,83 +47,5 @@ pipeline {
         }
       }
     }
-    stage('Build Image') {
-      steps {
-        script {
-          openshift.withCluster('okd_cluster' , 'okd_cred') {
-            openshift.withProject(){
-              openshift.selector("bc", "springbootapp").startBuild("--from-file=target/spring-example-0.0.1-SNAPSHOT.jar", "--wait")
-            }
-          } 
-        }
-      }
-    }
-    stage('Promote to UAT') {
-      steps {
-        script {
-          openshift.withCluster('okd_cluster' , 'okd_cred') {
-            openshift.withProject(){
-              openshift.tag("springbootapp:latest", "springbootapp:uat")
-            }
-          }  
-        }
-      }
-    }
-    stage('Create UAT') {
-      when {
-        expression {
-          openshift.withCluster('okd_cluster' , 'okd_cred') {
-            openshift.withProject('cicd-demo'){
-              return !openshift.selector('dc', 'springbootapp-uat').exists()
-            }
-          }
-        }
-      }
-      steps {
-        script {
-          openshift.withCluster('okd_cluster' , 'okd_cred') {
-            openshift.withProject('cicd-demo'){
-              openshift.newApp("springbootapp:latest", "--name=springbootapp-uat").narrow('svc').expose()
-            }
-          }
-        }
-      }
-    }
-    stage('Promote PROD') {
-      steps {
-        script {
-          openshift.withCluster('okd_cluster' , 'okd_cred') {
-            openshift.withProject('cicd-demo'){
-              openshift.tag("springbootapp:uat", "springbootapp:prod")
-            }
-          }
-        }
-      }
-    }
-    stage('Create PROD') {
-      when {
-        expression {
-          openshift.withCluster('okd_cluster' , 'okd_cred') {
-            openshift.withProject('cicd-demo'){
-              return !openshift.selector('dc', 'springbootapp-prod').exists()
-            }
-          }  
-        }
-      }
-      steps {
-        script {
-          openshift.withCluster('okd_cluster' , 'okd_cred') {
-            openshift.withProject('cicd-demo'){
-              openshift.newApp("springbootapp:prod", "--name=springbootapp-prod").narrow('svc').expose()
-            }
-          }
-      }
-    }
-  }
-}
-  post{
-    always{
-      sshPublisher(publishers: [sshPublisherDesc(configName: 'okd_server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-    } 
   } 
 }
