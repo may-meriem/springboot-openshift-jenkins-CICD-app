@@ -34,8 +34,8 @@ pipeline {
               return !openshift.selector("bc", "springbootapp").exists();
             }
           }
+         }
         }
-      }
         steps {
            script {
             openshift.withCluster('okd_cluster' , 'okd_cred') {
