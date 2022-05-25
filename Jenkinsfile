@@ -30,10 +30,7 @@ pipeline {
         
         steps {
            sshagent(['ssh-cred']){
-            script {
-              sh 'ssh root@172.29.7.11 oc project'
-            }
-           } 
+            sh 'ssh -o StrictHostKeyChecking=no -l root 172.29.7.11 uname -a' 
         }  
         
     }   
