@@ -28,8 +28,9 @@ pipeline {
     
    stage('Create Image Builder') {
       steps {
-        
-         sh 'ssh -tt root@172.29.7.11 "pwd"'
+        sshagent(credentials: ['ssh-credentials-id']) {
+            sh ' ssh root@172.29.7.11 '
+        }
         
       }
     }
