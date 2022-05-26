@@ -3,13 +3,14 @@ pipeline {
       label 'maven'
   }
    
- triggers {
-       pollSCM('*/5 * * * *')
-    }
-  
- options { disableConcurrentBuilds() }
+
   
   stages {     
+     stage('Clone Repo') {
+      steps {
+        git url : 'https://github.com/may-meriem/springboot-openshift-jenkins-CICD-app.git' 
+      }
+    }
     stage('Test App') {
       steps {
         sh "mvn clean test"
