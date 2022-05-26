@@ -22,15 +22,6 @@ pipeline {
     }
     
    stage('Create Image Builder') {
-      when {
-        expression {
-          openshift.withCluster('okd_cluster' , 'okd_cred') {
-             openshift.withProject('cicd-demo'){
-              return !openshift.selector("bc", "springbootapp").exists();
-             }  
-          }
-        }
-      }
       steps {
         script {
           openshift.withCluster() {
