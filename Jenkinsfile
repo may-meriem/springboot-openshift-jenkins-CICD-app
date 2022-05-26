@@ -14,11 +14,7 @@ pipeline {
         sh "mvn clean test"
       }
     }
-    stage('Quality Check :: Sonarqube ') {
-      steps {
-        sh "mvn sonar:sonar -Dsonar.host.url=http://localhost:9000 -Dsonar.login=e3df00d9279eb0d36033362fdc43b4476ec9b292"
-      }
-    }
+    
     stage('Insatll App') {
       steps {
         sh "mvn install"
