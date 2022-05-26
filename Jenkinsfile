@@ -3,8 +3,6 @@ pipeline {
       label 'maven'
   }
    
-
-  
   stages {     
      stage('Clone Repo') {
       steps {
