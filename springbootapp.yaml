@@ -1,0 +1,21 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: springbootapp
+  namespace: cicd-demo
+  spec:
+  strategy:
+    sourceStrategy:
+      from:
+        kind: DockerImage
+        name: juniorjbn/openjdk18-openshift
+    type: Source
+  source:
+    type: Git
+    git:
+      uri: "https://github.com/may-meriem/springboot-openshift-jenkins-CICD-app.git"
+      ref: master
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'springbootapp:latest'
