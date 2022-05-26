@@ -22,6 +22,13 @@ pipeline {
     }
     
    stage('Create Image Builder') {
+     when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector("bc", "springbootapp").exists();
+          }
+        }
+      }
       steps {
         script {
           openshift.withCluster() {
